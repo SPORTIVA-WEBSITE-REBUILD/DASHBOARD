@@ -11,6 +11,7 @@ import { useAuth } from '../lib/auth.jsx';
 export default function Enquiries() {
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState('');
+  const [source, setSource] = useState('');
   const [search, setSearch] = useState('');
   const [openId, setOpenId] = useState(null);
   const [pendingDelete, setPendingDelete] = useState(null);
@@ -19,7 +20,7 @@ export default function Enquiries() {
   const toast = useToast();
   const { can } = useAuth();
 
-  const query = { page, limit: 20, status, q: debounced };
+  const query = { page, limit: 20, status, source, q: debounced };
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['enquiries', query],
@@ -82,6 +83,11 @@ export default function Enquiries() {
               <option value="replied">Replied</option>
               <option value="spam">Spam</option>
             </select>
+            <select aria-label="Filter by form" value={source} onChange={(e) => { setSource(e.target.value); setPage(1); }}>
+              <option value="">Any form</option>
+              <option value="contact">Contact page</option>
+              <option value="consultation">Free consultation</option>
+            </select>
           </div>
 
           {isError && <ErrorState error={error} onRetry={refetch} />}
@@ -104,7 +110,10 @@ export default function Enquiries() {
                             </button>
                             <div className="muted">{e.email}</div>
                           </td>
-                          <td>{e.subject || <span className="muted">No subject</span>}</td>
+                          <td>
+                            {e.subject || <span className="muted">No subject</span>}
+                            {e.source === 'consultation' && <div className="muted">Free consultation form</div>}
+                          </td>
                           <td><StatusBadge status={e.status} /></td>
                           <td className="muted">{formatDate(e.createdAt)}</td>
                           <td className="actions">
@@ -124,7 +133,7 @@ export default function Enquiries() {
 
           {!isLoading && items.length === 0 && !isError && (
             <EmptyState
-              title={status || search ? 'Nothing matches those filters' : 'No enquiries yet'}
+              title={status || source || search ? 'Nothing matches those filters' : 'No enquiries yet'}
               message="Messages sent through the website's contact form appear here."
             />
           )}

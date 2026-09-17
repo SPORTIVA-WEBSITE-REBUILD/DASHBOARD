@@ -74,7 +74,32 @@ async function request(path, options = {}, isRetry = false) {
   }
 }
 
+/**
+ * Fetches a file (such as a CSV export) and hands it to the browser as a
+ * download. Uses the same cookie session, refreshing it once if it expired.
+ */
+async function download(path, filename, isRetry = false) {
+  const res = await fetch(`${BASE}${path}`, { credentials: 'include' });
+  if (res.status === 401 && !isRetry) {
+    await raw('/auth/refresh', { method: 'POST' });
+    return download(path, filename, true);
+  }
+  if (!res.ok) {
+    const payload = await res.json().catch(() => ({}));
+    const err = payload.error || {};
+    throw new ApiError(res.status, err.code || 'SERVER_ERROR', err.message || 'Download failed');
+  }
+  const url = URL.createObjectURL(await res.blob());
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  return true;
+}
+
 export const api = {
+  download,
   get: (path) => request(path),
   post: (path, body) => request(path, { method: 'POST', body }),
   patch: (path, body) => request(path, { method: 'PATCH', body }),

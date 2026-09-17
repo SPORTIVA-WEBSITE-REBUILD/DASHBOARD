@@ -22,6 +22,10 @@ const Vacancies = lazy(() => import('./pages/Vacancies.jsx'));
 const VacancyEdit = lazy(() => import('./pages/VacancyEdit.jsx'));
 const Lawyers = lazy(() => import('./pages/Lawyers.jsx'));
 const LawyerEdit = lazy(() => import('./pages/LawyerEdit.jsx'));
+const Testimonials = lazy(() => import('./pages/Testimonials.jsx'));
+const TestimonialEdit = lazy(() => import('./pages/TestimonialEdit.jsx'));
+const Comments = lazy(() => import('./pages/Comments.jsx'));
+const Subscribers = lazy(() => import('./pages/Subscribers.jsx'));
 const Categories = lazy(() => import('./pages/Categories.jsx'));
 const Media = lazy(() => import('./pages/Media.jsx'));
 const Enquiries = lazy(() => import('./pages/Enquiries.jsx'));
@@ -87,6 +91,11 @@ export default function App() {
 
           <Route path="lawyers" element={<Lawyers />} />
           <Route path="lawyers/:id" element={<LawyerEdit />} />
+
+          <Route path="testimonials" element={<Testimonials />} />
+          <Route path="testimonials/:id" element={<TestimonialEdit />} />
+          <Route path="comments" element={<Comments />} />
+          <Route path="subscribers" element={<Subscribers />} />
 
           <Route path="categories" element={<Categories />} />
           <Route path="media" element={<Media />} />

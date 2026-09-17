@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api.js';
 import { PageHeader } from '../layout/Shell.jsx';
@@ -37,14 +38,14 @@ export default function Settings() {
         phone: values.contact?.phone || '',
         email: values.contact?.email || '',
         mapUrl: values.contact?.mapUrl || '',
-        businessHours: (values.contact?.businessHours || []).filter((h) => h.label),
+        website: values.contact?.website || '',
       },
       // A row the administrator added but never filled in is discarded rather
       // than saved, so the footer never has to decide whether to draw it.
       socials: (values.socials || [])
         .map((s) => ({ platform: s.platform, url: (s.url || '').trim() }))
         .filter((s) => s.platform && s.url),
-      copyrightText: values.copyrightText,
+      showCaseFilters: values.showCaseFilters !== false,
       seoDefaults: { ...values.seoDefaults, ogImage: idOf(values.seoDefaults?.ogImage) },
       enquiryRecipient: values.enquiryRecipient || '',
       careersEmail: values.careersEmail || '',
@@ -64,7 +65,6 @@ export default function Settings() {
   if (isLoading || !values) return <><PageHeader title="Site Settings" /><div className="content"><Spinner /></div></>;
   if (isError) return <><PageHeader title="Site Settings" /><div className="content"><ErrorState error={error} onRetry={refetch} /></div></>;
 
-  const hours = values.contact?.businessHours || [];
   const socials = values.socials || [];
 
   return (
@@ -94,9 +94,24 @@ export default function Settings() {
 
           <MediaPicker label="Logo" value={values.logo} onChange={(m) => set('logo', m)} />
 
-          <Field label="Copyright text" htmlFor="copyright" error={errors.copyrightText}>
-            <input id="copyright" type="text" value={values.copyrightText || ''} onChange={(e) => set('copyrightText', e.target.value)} />
-          </Field>
+          <p className="hint">
+            The footer text, copyright line, business hours, menu button and newsletter band
+            are edited under <Link to="/pages">Pages → Site layout</Link>.
+          </p>
+        </div>
+
+        <div className="card">
+          <div className="card__header"><h2>Display</h2></div>
+
+          <label className="checkbox" htmlFor="showCaseFilters">
+            <input
+              id="showCaseFilters" type="checkbox" checked={values.showCaseFilters !== false}
+              onChange={(e) => set('showCaseFilters', e.target.checked)}
+            />
+            {' '}Show filters on the case record page
+          </label>
+          <p className="hint">Lets visitors narrow cases by forum, year, party and outcome.</p>
+
         </div>
 
         <div className="card">
@@ -113,6 +128,10 @@ export default function Settings() {
 
             <Field label="Public email" htmlFor="cemail" error={errors['contact.email']}>
               <input id="cemail" type="email" value={values.contact?.email || ''} onChange={(e) => setContact('email', e.target.value)} />
+            </Field>
+
+            <Field label="Website" htmlFor="website" error={errors['contact.website']} hint="Shown on the contact page, e.g. pcnsportivalp.com">
+              <input id="website" type="text" value={values.contact?.website || ''} onChange={(e) => setContact('website', e.target.value)} />
             </Field>
           </div>
 
@@ -142,40 +161,6 @@ export default function Settings() {
             <input id="careersEmail" type="email" value={values.careersEmail || ''} onChange={(e) => set('careersEmail', e.target.value)} />
           </Field>
 
-          <h3 className="mt-2">Office hours</h3>
-          {hours.map((h, i) => (
-            // Fixed-length ordered list edited in place; index is stable here.
-            // eslint-disable-next-line react/no-array-index-key
-            <div className="row" key={i}>
-              <Field label="Label" htmlFor={`hl-${i}`}>
-                <input
-                  id={`hl-${i}`} type="text" value={h.label || ''} placeholder="Monday – Friday"
-                  onChange={(e) => {
-                    const next = [...hours]; next[i] = { ...h, label: e.target.value }; setContact('businessHours', next);
-                  }}
-                />
-              </Field>
-              <Field label="Hours" htmlFor={`hv-${i}`}>
-                <input
-                  id={`hv-${i}`} type="text" value={h.value || ''} placeholder="9am – 5pm"
-                  onChange={(e) => {
-                    const next = [...hours]; next[i] = { ...h, value: e.target.value }; setContact('businessHours', next);
-                  }}
-                />
-              </Field>
-              <div style={{ flex: '0 0 auto', alignSelf: 'end', marginBottom: '1rem' }}>
-                <button
-                  type="button" className="btn btn--sm btn--danger"
-                  onClick={() => setContact('businessHours', hours.filter((_, j) => j !== i))}
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
-          <button type="button" className="btn btn--sm" onClick={() => setContact('businessHours', [...hours, { label: '', value: '' }])}>
-            Add hours
-          </button>
         </div>
 
         <div className="card">

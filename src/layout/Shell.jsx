@@ -11,12 +11,15 @@ const NAV = [
   { to: '/services', label: 'Services', permission: 'services:read' },
   { to: '/lawyers', label: 'Team', permission: 'lawyers:read' },
   { to: '/gallery', label: 'Gallery', permission: 'gallery:read' },
+  { to: '/testimonials', label: 'Testimonials', permission: 'testimonials:read' },
   { to: '/vacancies', label: 'Careers', permission: 'vacancies:read' },
   { to: '/categories', label: 'Categories', permission: 'categories:read' },
 
   { section: 'Site' },
   { to: '/media', label: 'Media', permission: 'media:read' },
   { to: '/enquiries', label: 'Enquiries', permission: 'enquiries:read' },
+  { to: '/comments', label: 'Comments', permission: 'comments:read' },
+  { to: '/subscribers', label: 'Subscribers', permission: 'subscribers:read' },
   { to: '/settings', label: 'Site Settings', permission: 'settings:read' },
   { to: '/navigation', label: 'Navigation', permission: 'navigation:read' },
 

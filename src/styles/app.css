@@ -95,6 +95,9 @@ h3 { font-size: 15px; }
 .card__header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
 .card__header h2 { margin: 0; }
 .card__header .spacer { margin-left: auto; }
+.card--nested { box-shadow: none; background: var(--bg); padding: 1rem; margin-bottom: .75rem; }
+.card--nested .card__header h3 { margin: 0; font-size: 14px; }
+.card > .hint { color: var(--muted); font-size: 13px; margin-top: 0; }
 
 .grid { display: grid; gap: 1rem; }
 .grid--stats { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
@@ -126,6 +129,8 @@ h3 { font-size: 15px; }
 .field label { display: block; font-weight: 500; margin-bottom: .35rem; font-size: 13px; }
 .field .hint { color: var(--muted); font-size: 12px; margin-top: .25rem; }
 .field .error { color: var(--danger); font-size: 12px; margin-top: .25rem; display: block; }
+fieldset.field { border: 1px solid var(--border, #e5e7eb); border-radius: 8px; padding: .75rem 1rem 0; }
+fieldset.field legend { font-weight: 600; font-size: 13px; padding: 0 .35rem; }
 
 input[type=text], input[type=email], input[type=password], input[type=number],
 input[type=url], input[type=search], input[type=tel], select, textarea {
@@ -162,6 +167,9 @@ table.data td.actions { text-align: right; white-space: nowrap; }
 .badge--draft { background: var(--warning-bg); color: var(--warning); }
 .badge--new { background: var(--success-bg); color: var(--success); }
 .badge--spam { background: var(--danger-bg); color: var(--danger); }
+.badge--pending { background: var(--warning-bg); color: var(--warning); }
+.badge--approved, .badge--subscribed { background: var(--success-bg); color: var(--success); }
+.badge--unsubscribed { background: #eef0f3; color: var(--muted); }
 
 /* ------------------------------- states ------------------------------- */
 

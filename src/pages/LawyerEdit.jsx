@@ -9,7 +9,7 @@ import SeoFields from '../components/SeoFields.jsx';
 import SocialIcon, { SUPPORTED_PLATFORMS, platformLabel } from '../components/SocialIcon.jsx';
 
 const EMPTY = {
-  name: '', slug: '', role: '', bio: '', photo: null, qualifications: [],
+  name: '', slug: '', role: '', quote: '', bio: '', photo: null, qualifications: [],
   practiceAreas: [], email: '', phone: '', socials: [], order: 0, seo: {}, status: 'draft',
 };
 
@@ -20,6 +20,7 @@ function toPayload(v) {
     name: v.name,
     ...(v.slug ? { slug: v.slug } : {}),
     role: v.role,
+    quote: v.quote,
     bio: v.bio,
     photo: idOf(v.photo),
     qualifications: v.qualifications,
@@ -85,6 +86,10 @@ export default function LawyerEdit() {
           </div>
 
           <MediaPicker label="Photo" value={values.photo} onChange={(m) => set('photo', m)} />
+
+          <Field label="Card quote" htmlFor="quote" error={errors.quote} hint="A sentence or two shown when a visitor turns over the team member's card.">
+            <textarea id="quote" rows={2} maxLength={400} value={values.quote || ''} onChange={(e) => set('quote', e.target.value)} />
+          </Field>
 
           <div className="row">
             <Field label="Email" htmlFor="email" error={errors.email}>
