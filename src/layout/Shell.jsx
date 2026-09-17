@@ -1,6 +1,9 @@
-import { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth.jsx';
+
+/** Lets any screen's header open the mobile sidebar through React state. */
+const MenuContext = createContext({ open: false, setOpen: () => {} });
 
 const NAV = [
   { section: 'Content' },
@@ -32,6 +35,16 @@ export default function Shell() {
   const { admin, can, isSuperAdmin, logout } = useAuth();
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  // Close on navigation, and on Escape while open.
+  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    if (!open) return undefined;
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open]);
 
   const visible = NAV.filter((item) => {
     if (item.section) return true;
@@ -42,11 +55,15 @@ export default function Shell() {
   }).filter((item, i, arr) => !item.section || arr[i + 1]?.section === undefined);
 
   return (
+    <MenuContext.Provider value={{ open, setOpen }}>
     <div className="app">
-      <aside className={`sidebar${open ? ' open' : ''}`}>
+      <aside id="dashboard-sidebar" className={`sidebar${open ? ' open' : ''}`}>
         <div className="sidebar__brand">
-          PCN Sportiva
-          <small>Content management</small>
+          <div>
+            PCN Sportiva
+            <small>Content management</small>
+          </div>
+          <button type="button" className="sidebar__close" aria-label="Close menu" onClick={() => setOpen(false)}>×</button>
         </div>
 
         <ul className="sidebar__nav">
@@ -89,16 +106,25 @@ export default function Shell() {
         <Outlet context={{ openMenu: () => setOpen(true) }} />
       </div>
     </div>
+    </MenuContext.Provider>
   );
 }
 
 /** Every screen's header, so titles and action placement stay consistent. */
 export function PageHeader({ title, actions }) {
+  const { open, setOpen } = useContext(MenuContext);
   return (
     <div className="topbar">
-      <button type="button" className="menu-toggle" aria-label="Open menu" onClick={() => {
-        document.querySelector('.sidebar')?.classList.add('open');
-      }}>☰</button>
+      <button
+        type="button"
+        className="menu-toggle"
+        aria-label={open ? 'Close menu' : 'Open menu'}
+        aria-expanded={open}
+        aria-controls="dashboard-sidebar"
+        onClick={() => setOpen(!open)}
+      >
+        {open ? '×' : '☰'}
+      </button>
       <h1>{title}</h1>
       {actions && <div className="topbar__actions">{actions}</div>}
     </div>
