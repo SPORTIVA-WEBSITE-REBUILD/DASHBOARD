@@ -4,6 +4,7 @@ import { Field, Spinner, ErrorState } from '../components/ui.jsx';
 import Editor from '../components/Editor.jsx';
 import MediaPicker from '../components/MediaPicker.jsx';
 import SeoFields from '../components/SeoFields.jsx';
+import { ICONS } from '../lib/icons.js';
 
 const EMPTY = {
   title: '', slug: '', icon: '', summary: '', body: '',
@@ -11,29 +12,6 @@ const EMPTY = {
 };
 
 const idOf = (v) => (v && typeof v === 'object' ? v._id : v) || undefined;
-
-/**
- * Exactly the glyphs the bundled Flaticon font provides, so every option an
- * administrator can pick actually renders. Offering a name the font does not
- * contain produces a silent blank square on the public site.
- *
- * Keep in step with public/css/flaticon.css in the frontend; the frontend's
- * icon subset test covers the font side.
- */
-const ICONS = [
-  ['flaticon-lawyer', 'Lawyer'],
-  ['flaticon-auction', 'Gavel'],
-  ['flaticon-handshake', 'Handshake'],
-  ['flaticon-shield', 'Shield'],
-  ['flaticon-medal', 'Medal'],
-  ['flaticon-money', 'Money'],
-  ['flaticon-family', 'Family'],
-  ['flaticon-employee', 'Employment'],
-  ['flaticon-house', 'Property'],
-  ['flaticon-handcuffs', 'Criminal'],
-  ['flaticon-medicine', 'Medical'],
-  ['flaticon-fire', 'Accident'],
-];
 
 function toPayload(v) {
   return {

@@ -42,6 +42,9 @@ export default function Dashboard() {
           <Stat value={isLoading ? '…' : c.galleryPublished} label="Gallery images" to="/gallery" />
           <Stat value={isLoading ? '…' : c.vacanciesOpen} label="Open roles" to="/vacancies" />
           <Stat value={isLoading ? '…' : c.enquiriesNew} label="New enquiries" to="/enquiries" />
+          <Stat value={isLoading ? '…' : c.commentsPending} label="Comments awaiting approval" to="/comments" />
+          <Stat value={isLoading ? '…' : c.testimonials} label="Testimonials" to="/testimonials" />
+          <Stat value={isLoading ? '…' : c.subscribers} label="Newsletter subscribers" to="/subscribers" />
         </div>
 
         <div className="grid grid--2">
