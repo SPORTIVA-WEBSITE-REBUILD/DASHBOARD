@@ -4,7 +4,6 @@ import { Field, Spinner, ErrorState } from '../components/ui.jsx';
 import Editor from '../components/Editor.jsx';
 import MediaPicker from '../components/MediaPicker.jsx';
 import SeoFields from '../components/SeoFields.jsx';
-import { ICONS } from '../lib/icons.js';
 
 const EMPTY = {
   title: '', slug: '', icon: '', summary: '', body: '',
@@ -17,7 +16,6 @@ function toPayload(v) {
   return {
     title: v.title,
     ...(v.slug ? { slug: v.slug } : {}),
-    icon: v.icon,
     summary: v.summary,
     body: v.body,
     image: idOf(v.image),
@@ -58,13 +56,6 @@ export default function ServiceEdit() {
           </Field>
 
           <div className="row">
-            <Field label="Icon" htmlFor="icon" hint="Shown on the service cards.">
-              <select id="icon" value={values.icon} onChange={(e) => set('icon', e.target.value)}>
-                <option value="">Default</option>
-                {ICONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-              </select>
-            </Field>
-
             <Field label="Display order" htmlFor="order" hint="Lower numbers appear first.">
               <input id="order" type="number" min="0" value={values.order} onChange={(e) => set('order', e.target.value)} />
             </Field>
@@ -74,7 +65,8 @@ export default function ServiceEdit() {
             <textarea id="summary" rows={3} maxLength={400} value={values.summary} onChange={(e) => set('summary', e.target.value)} />
           </Field>
 
-          <MediaPicker label="Image" value={values.image} onChange={(m) => set('image', m)} />
+          <MediaPicker label="Card image" value={values.image} onChange={(m) => set('image', m)} />
+          <p className="hint">The photograph on this service's card and at the top of its page. Landscape images crop best.</p>
         </div>
 
         <div className="card">

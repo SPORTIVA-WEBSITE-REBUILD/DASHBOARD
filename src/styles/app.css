@@ -7,8 +7,9 @@
   --border: #e3e6ea;
   --text: #1d2330;
   --muted: #6b7280;
-  --primary: #afa939;      /* carried over from the public site's palette */
-  --primary-dark: #968f2c;
+  --primary: #047dd6;      /* PCN Sportiva brand blue, matching the public site */
+  --primary-dark: #0365ae;
+  --on-primary: #ffffff;   /* text on primary backgrounds */
   --danger: #c0392b;
   --danger-bg: #fdecea;
   --success: #2e7d4f;
@@ -26,13 +27,15 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font: 14px/1.55 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font: 14px/1.55 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 a { color: var(--primary-dark); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 h1, h2, h3 { margin: 0 0 .5rem; line-height: 1.25; }
+/* Page and card titles share the website's headline serif. */
+h1, h2, .sidebar__brand { font-family: 'Playfair Display', 'Baskerville', Georgia, serif; letter-spacing: -0.005em; }
 h1 { font-size: 22px; }
 h2 { font-size: 18px; }
 h3 { font-size: 15px; }
@@ -51,7 +54,9 @@ h3 { font-size: 15px; }
   overflow-y: auto;
   z-index: 30;
 }
-.sidebar__brand { padding: 0 1.25rem 1.25rem; font-weight: 600; color: #fff; font-size: 15px; }
+.sidebar__brand { padding: 0 1.25rem 1.25rem; font-weight: 600; color: #fff; font-size: 15px; display: flex; align-items: flex-start; justify-content: space-between; gap: .5rem; }
+.sidebar__close { display: none; background: none; border: 0; color: #cfd4dd; font-size: 26px; line-height: 1; padding: 0 .25rem; cursor: pointer; }
+.sidebar__close:hover { color: #fff; }
 .sidebar__brand small { display: block; color: #8b93a3; font-weight: 400; font-size: 12px; }
 .sidebar__nav { list-style: none; margin: 0; padding: 0; flex: 1; }
 .sidebar__nav a {
@@ -59,7 +64,7 @@ h3 { font-size: 15px; }
   padding: .55rem 1.25rem; color: #cfd4dd; font-size: 14px;
 }
 .sidebar__nav a:hover { background: rgba(255,255,255,.05); color: #fff; text-decoration: none; }
-.sidebar__nav a.active { background: rgba(175,169,57,.16); color: #fff; box-shadow: inset 3px 0 0 var(--primary); }
+.sidebar__nav a.active { background: rgba(4,125,214,.22); color: #fff; box-shadow: inset 3px 0 0 var(--primary); }
 .sidebar__section { padding: 1rem 1.25rem .35rem; font-size: 11px; text-transform: uppercase; letter-spacing: .09em; color: #6b7280; }
 .sidebar__footer { padding: 1rem 1.25rem 0; border-top: 1px solid rgba(255,255,255,.08); }
 .sidebar__user { font-size: 13px; color: #fff; }
@@ -75,6 +80,16 @@ h3 { font-size: 15px; }
 .topbar__actions { margin-left: auto; display: flex; gap: .5rem; }
 .content { padding: 1.5rem; }
 
+/* Phones: the title keeps one line and the action buttons move to a row of
+   their own, so a long title and two buttons never push the page sideways. */
+@media (max-width: 600px) {
+  .topbar { flex-wrap: wrap; padding: .75rem 1rem; gap: .5rem .75rem; }
+  .topbar h1 { flex: 1; min-width: 0; font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .topbar__actions { margin-left: 0; width: 100%; }
+  .topbar__actions > .btn { flex: 1; }
+  .content { padding: 1rem; }
+}
+
 .menu-toggle { display: none; background: none; border: 0; font-size: 20px; cursor: pointer; }
 
 @media (max-width: 900px) {
@@ -82,6 +97,7 @@ h3 { font-size: 15px; }
   .sidebar.open { transform: none; }
   .main { margin-left: 0; }
   .menu-toggle { display: block; }
+  .sidebar__close { display: block; }
   .sidebar-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 25; }
 }
 
@@ -111,14 +127,14 @@ h3 { font-size: 15px; }
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
-  border: 1px solid transparent; border-radius: var(--radius);
-  padding: .5rem .9rem; font-size: 14px; font-weight: 500;
+  border: 1px solid transparent; border-radius: 999px; /* pill buttons, matching the site */
+  padding: .5rem 1.1rem; font-size: 14px; font-weight: 500;
   cursor: pointer; background: var(--surface); color: var(--text);
   border-color: var(--border); font-family: inherit;
 }
 .btn:hover:not(:disabled) { background: #f1f3f5; text-decoration: none; }
 .btn:disabled { opacity: .55; cursor: not-allowed; }
-.btn--primary { background: var(--primary); border-color: var(--primary); color: #1d2330; }
+.btn--primary { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
 .btn--primary:hover:not(:disabled) { background: var(--primary-dark); }
 .btn--danger { background: var(--danger); border-color: var(--danger); color: #fff; }
 .btn--danger:hover:not(:disabled) { background: #a5322a; }
@@ -138,7 +154,7 @@ input[type=url], input[type=search], input[type=tel], select, textarea {
   border-radius: var(--radius); font: inherit; background: #fff; color: inherit;
 }
 input:focus, select:focus, textarea:focus {
-  outline: 2px solid rgba(175,169,57,.4); outline-offset: 0; border-color: var(--primary);
+  outline: 2px solid rgba(4,125,214,.4); outline-offset: 0; border-color: var(--primary);
 }
 input[aria-invalid=true], textarea[aria-invalid=true] { border-color: var(--danger); }
 textarea { resize: vertical; min-height: 90px; }
@@ -245,11 +261,11 @@ table.data td.actions { text-align: right; white-space: nowrap; }
 .editor { border: 1px solid var(--border); border-radius: var(--radius); background: #fff; }
 .editor__toolbar { display: flex; flex-wrap: wrap; gap: .25rem; padding: .4rem; border-bottom: 1px solid var(--border); }
 .editor__toolbar button {
-  border: 1px solid transparent; background: none; border-radius: 3px;
-  padding: .25rem .5rem; cursor: pointer; font-size: 13px; font-family: inherit;
+  border: 1px solid transparent; background: none; border-radius: 999px;
+  padding: .25rem .65rem; cursor: pointer; font-size: 13px; font-family: inherit;
 }
 .editor__toolbar button:hover { background: #f1f3f5; }
-.editor__toolbar button.is-active { background: var(--primary); color: #1d2330; }
+.editor__toolbar button.is-active { background: var(--primary); color: var(--on-primary); }
 .editor__content { padding: .85rem; min-height: 280px; }
 .editor__content:focus-visible { outline: none; }
 .editor__content .ProseMirror { outline: none; min-height: 260px; }
@@ -260,7 +276,7 @@ table.data td.actions { text-align: right; white-space: nowrap; }
 
 .pagination { display: flex; gap: .3rem; align-items: center; justify-content: center; margin-top: 1.25rem; }
 .pagination button { min-width: 34px; }
-.pagination .current { font-weight: 600; background: var(--primary); border-color: var(--primary); }
+.pagination .current { font-weight: 600; background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
 
 .toolbar { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; margin-bottom: 1rem; }
 .toolbar input[type=search], .toolbar select { max-width: 240px; }
@@ -306,7 +322,7 @@ table.data td.actions { text-align: right; white-space: nowrap; }
   height: 30px;
   padding: 0;
   border: 0;
-  border-radius: var(--radius);
+  border-radius: 50%;
   background: none;
   color: var(--muted);
   cursor: pointer;
@@ -314,3 +330,44 @@ table.data td.actions { text-align: right; white-space: nowrap; }
 
 .password-field__toggle:hover { color: var(--text); background: #f1f3f5; }
 .password-field__toggle:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+
+/* ------------------------- liquid glass buttons ------------------------- */
+
+/* The website's button treatment: glass base on primary actions; every button
+   gets the hover sheen, lift and soft blue shadow. */
+.btn { position: relative; overflow: hidden; isolation: isolate; transition: transform .35s ease, box-shadow .35s ease, background-color .35s ease; }
+.btn::before {
+  content: ''; position: absolute; top: 0; bottom: 0; left: -75%; width: 60%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: skewX(-15deg); transition: left .7s ease; pointer-events: none; z-index: -1;
+}
+.btn:hover:not(:disabled)::before, .btn:focus-visible::before { left: 125%; }
+.btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 25px rgba(30, 58, 138, 0.18); }
+
+.btn--primary {
+  background: rgba(4, 125, 214, 0.85); color: #fff; font-weight: 600;
+  border-color: transparent;
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.btn--primary::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.45), rgba(4, 125, 214, 0.3));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  pointer-events: none; z-index: -1;
+}
+.btn--primary::before { background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.25), transparent); }
+.btn--primary:hover:not(:disabled) {
+  background: rgba(4, 125, 214, 0.95);
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(30, 58, 138, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+.btn--ghost:hover:not(:disabled) { box-shadow: none; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn { transition: none; }
+  .btn::before { display: none; }
+  .btn:hover:not(:disabled) { transform: none; }
+}
