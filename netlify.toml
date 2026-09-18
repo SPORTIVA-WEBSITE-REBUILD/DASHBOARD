@@ -1,0 +1,19 @@
+# Netlify deploy config. vercel.json is kept alongside it; neither platform
+# reads the other's file, so both remain valid targets.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# The dashboard is an administrative surface: never indexed, never framed.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "same-origin"
