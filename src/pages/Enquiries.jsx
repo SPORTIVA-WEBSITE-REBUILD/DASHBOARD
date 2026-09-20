@@ -86,7 +86,7 @@ export default function Enquiries() {
             <select aria-label="Filter by form" value={source} onChange={(e) => { setSource(e.target.value); setPage(1); }}>
               <option value="">Any form</option>
               <option value="contact">Contact page</option>
-              <option value="consultation">Free consultation</option>
+              <option value="consultation">Talk to a Lawyer</option>
             </select>
           </div>
 
@@ -112,7 +112,7 @@ export default function Enquiries() {
                           </td>
                           <td>
                             {e.subject || <span className="muted">No subject</span>}
-                            {e.source === 'consultation' && <div className="muted">Free consultation form</div>}
+                            {e.source === 'consultation' && <div className="muted">Talk to a Lawyer form</div>}
                           </td>
                           <td><StatusBadge status={e.status} /></td>
                           <td className="muted">{formatDate(e.createdAt)}</td>

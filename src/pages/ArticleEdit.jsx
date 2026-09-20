@@ -81,7 +81,7 @@ export default function ArticleEdit() {
             label="Excerpt"
             htmlFor="excerpt"
             error={errors.excerpt}
-            hint="Shown on the Insights listing. Left blank, the opening of the article is used."
+            hint="Shown under the headline on Insights cards. Write a fresh sentence, not the headline again (a repeat is hidden on the card). Left blank, the opening of the article is used."
           >
             <textarea id="excerpt" rows={3} maxLength={400} value={values.excerpt} onChange={(e) => set('excerpt', e.target.value)} />
           </Field>
