@@ -36,6 +36,7 @@ export default function Settings() {
       contact: {
         address: values.contact?.address || '',
         phone: values.contact?.phone || '',
+        phone2: values.contact?.phone2 || '',
         email: values.contact?.email || '',
         mapUrl: values.contact?.mapUrl || '',
         website: values.contact?.website || '',
@@ -124,6 +125,10 @@ export default function Settings() {
           <div className="row">
             <Field label="Phone" htmlFor="phone">
               <input id="phone" type="tel" value={values.contact?.phone || ''} onChange={(e) => setContact('phone', e.target.value)} />
+            </Field>
+
+            <Field label="Second phone" htmlFor="phone2" hint="Shown beneath the first wherever the phone number appears. Leave blank for one number.">
+              <input id="phone2" type="tel" value={values.contact?.phone2 || ''} onChange={(e) => setContact('phone2', e.target.value)} />
             </Field>
 
             <Field label="Public email" htmlFor="cemail" error={errors['contact.email']}>
