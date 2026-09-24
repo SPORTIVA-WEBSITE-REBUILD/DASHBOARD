@@ -100,7 +100,7 @@ export default function Categories() {
           )}
 
           {!isLoading && items.length === 0 && !isError && (
-            <EmptyState title="No categories yet" message="Categories group articles on the Insights page." />
+            <EmptyState title="No categories yet" message="Categories group articles on the Articles page." />
           )}
         </div>
       </div>

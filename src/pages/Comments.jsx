@@ -135,7 +135,7 @@ export default function Comments() {
           {!isLoading && items.length === 0 && !isError && (
             <EmptyState
               title={status === 'pending' && !search ? 'Nothing awaiting approval' : 'No comments match'}
-              message="Comments left on Insights articles appear here."
+              message="Comments left on Articles articles appear here."
             />
           )}
 
