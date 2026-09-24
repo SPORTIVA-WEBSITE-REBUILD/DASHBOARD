@@ -371,3 +371,15 @@ table.data td.actions { text-align: right; white-space: nowrap; }
   .btn::before { display: none; }
   .btn:hover:not(:disabled) { transform: none; }
 }
+
+/* Footnotes: the marker is an empty <sup data-fn>; a counter numbers it. */
+.editor__content, .editor__content .ProseMirror { counter-reset: footnote; }
+.editor__content sup[data-fn] {
+  counter-increment: footnote;
+  cursor: pointer;
+  color: var(--primary);
+  font-weight: 600;
+  padding: 0 1px;
+}
+.editor__content sup[data-fn]::after { content: '[' counter(footnote) ']'; font-size: .85em; }
+.editor__content sup[data-fn].ProseMirror-selectednode { background: rgba(0, 120, 200, .15); border-radius: 3px; }
