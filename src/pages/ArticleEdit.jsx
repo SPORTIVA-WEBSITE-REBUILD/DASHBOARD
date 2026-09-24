@@ -6,9 +6,10 @@ import { Field, Spinner, ErrorState } from '../components/ui.jsx';
 import Editor from '../components/Editor.jsx';
 import MediaPicker from '../components/MediaPicker.jsx';
 import SeoFields from '../components/SeoFields.jsx';
+import AuthorPicker from '../components/AuthorPicker.jsx';
 
 const EMPTY = {
-  title: '', slug: '', excerpt: '', body: '', author: null, category: null,
+  title: '', slug: '', excerpt: '', body: '', authors: [], category: null,
   tags: [], featuredImage: null, seo: {}, status: 'draft',
 };
 
@@ -20,7 +21,7 @@ function toPayload(v) {
     ...(v.slug ? { slug: v.slug } : {}),
     excerpt: v.excerpt,
     body: v.body,
-    author: idOf(v.author),
+    authors: (v.authors || []).map(idOf).filter(Boolean),
     category: idOf(v.category),
     tags: v.tags,
     featuredImage: idOf(v.featuredImage),
@@ -88,14 +89,9 @@ export default function ArticleEdit() {
             <textarea id="excerpt" rows={3} maxLength={400} value={values.excerpt} onChange={(e) => set('excerpt', e.target.value)} />
           </Field>
 
-          <div className="row">
-            <Field label="Author" htmlFor="author">
-              <select id="author" value={idOf(values.author) || ''} onChange={(e) => set('author', e.target.value || null)}>
-                <option value="">No author</option>
-                {(lawyers || []).map((l) => <option key={l._id} value={l._id}>{l.name}</option>)}
-              </select>
-            </Field>
+          <AuthorPicker value={values.authors} onChange={(ids) => set('authors', ids)} />
 
+          <div className="row">
             <Field label="Category" htmlFor="category">
               <select id="category" value={idOf(values.category) || ''} onChange={(e) => set('category', e.target.value || null)}>
                 <option value="">Uncategorised</option>
