@@ -24,6 +24,8 @@ function toPayload(v) {
     category: idOf(v.category),
     tags: v.tags,
     featuredImage: idOf(v.featuredImage),
+    // Noon UTC so the chosen calendar day survives any timezone.
+    ...(v.publishedAt ? { publishedAt: new Date(`${String(v.publishedAt).slice(0, 10)}T12:00:00Z`).toISOString() } : {}),
     seo: { ...v.seo, ogImage: idOf(v.seo?.ogImage) },
   };
 }
@@ -110,6 +112,19 @@ export default function ArticleEdit() {
               />
             </Field>
           </div>
+
+          <Field
+            label="Publication date"
+            htmlFor="publishedAt"
+            hint="Shown on the article. Pick an earlier date to backdate it; leave empty to use the day it is first published."
+          >
+            <input
+              id="publishedAt"
+              type="date"
+              value={values.publishedAt ? String(values.publishedAt).slice(0, 10) : ''}
+              onChange={(e) => set('publishedAt', e.target.value)}
+            />
+          </Field>
 
           <MediaPicker label="Featured image" value={values.featuredImage} onChange={(m) => set('featuredImage', m)} />
         </div>
