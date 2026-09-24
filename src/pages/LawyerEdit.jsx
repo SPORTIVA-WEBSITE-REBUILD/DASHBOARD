@@ -92,8 +92,8 @@ export default function LawyerEdit() {
           </Field>
 
           <div className="row">
-            <Field label="Email" htmlFor="email" error={errors.email}>
-              <input id="email" type="email" value={values.email} onChange={(e) => set('email', e.target.value)} />
+            <Field label="Email" htmlFor="email" error={errors.email} hint="Separate several addresses with a comma.">
+              <input id="email" type="email" multiple value={values.email} onChange={(e) => set('email', e.target.value)} />
             </Field>
 
             <Field label="Phone" htmlFor="phone">
