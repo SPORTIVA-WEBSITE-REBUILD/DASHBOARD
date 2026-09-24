@@ -93,7 +93,7 @@ export default function Comments() {
                         <tr key={c._id}>
                           <td>
                             {c.name}
-                            <div className="muted">{c.email}</div>
+                            <div className="muted"><a href={`mailto:${c.email}`}>{c.email}</a></div>
                             {c.website && <div className="muted">{c.website}</div>}
                             <div className="muted">{formatDate(c.createdAt)}</div>
                           </td>
