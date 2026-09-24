@@ -108,7 +108,7 @@ export default function Enquiries() {
                             <button type="button" className="btn btn--ghost btn--sm" style={{ padding: 0 }} onClick={() => setOpenId(e._id)}>
                               {e.name}
                             </button>
-                            <div className="muted">{e.email}</div>
+                            <div className="muted"><a href={`mailto:${e.email}`} onClick={(ev) => ev.stopPropagation()}>{e.email}</a></div>
                           </td>
                           <td>
                             {e.subject || <span className="muted">No subject</span>}

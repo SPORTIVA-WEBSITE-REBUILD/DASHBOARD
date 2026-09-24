@@ -99,7 +99,7 @@ export default function Subscribers() {
                     <tbody>
                       {items.map((s) => (
                         <tr key={s._id}>
-                          <td>{s.email}</td>
+                          <td><a href={`mailto:${s.email}`}>{s.email}</a></td>
                           <td><StatusBadge status={s.status} /></td>
                           <td className="muted">{formatDate(s.createdAt)}</td>
                           <td className="actions">
