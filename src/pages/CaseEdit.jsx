@@ -6,11 +6,12 @@ import { Field, Spinner, ErrorState } from '../components/ui.jsx';
 import Editor from '../components/Editor.jsx';
 import MediaPicker from '../components/MediaPicker.jsx';
 import SeoFields from '../components/SeoFields.jsx';
+import AuthorPicker from '../components/AuthorPicker.jsx';
 
 const EMPTY = {
   title: '', slug: '', forum: '', year: new Date().getFullYear(),
   partyRepresented: 'athlete', outcome: 'won', summary: '', body: '',
-  anonymised: true, practiceArea: null, featuredImage: null, seo: {}, status: 'draft',
+  anonymised: true, practiceArea: null, authors: [], featuredImage: null, seo: {}, status: 'draft',
 };
 
 const PARTIES = [
@@ -37,6 +38,7 @@ function toPayload(v) {
     body: v.body,
     anonymised: v.anonymised,
     practiceArea: idOf(v.practiceArea),
+    authors: (v.authors || []).map(idOf).filter(Boolean),
     featuredImage: idOf(v.featuredImage),
     // Noon UTC so the chosen calendar day survives any timezone.
     ...(v.publishedAt ? { publishedAt: new Date(`${String(v.publishedAt).slice(0, 10)}T12:00:00Z`).toISOString() } : {}),
@@ -101,6 +103,8 @@ export default function CaseEdit() {
               />
             </Field>
           </div>
+
+          <AuthorPicker label="Team" value={values.authors} onChange={(ids) => set('authors', ids)} />
 
           <Field
             label="Publication date"
