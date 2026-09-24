@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
+import Footnote from './footnoteExtension.js';
 import { Modal } from './ui.jsx';
 import { MediaLibrary } from './MediaPicker.jsx';
 import { preview } from '../lib/upload.js';
@@ -55,11 +56,24 @@ export default function Editor({ value, onChange, placeholder = 'Write here…' 
       // Not part of StarterKit; base64 is refused so images always go through
       // the media library and end up on the CDN.
       Image.configure({ inline: false, allowBase64: false }),
+      Footnote,
     ],
     content: value || '',
     onUpdate: ({ editor: e }) => onChange(e.getHTML()),
     editorProps: {
       attributes: { class: 'editor__content', 'aria-label': placeholder },
+      // Clicking a footnote number edits its source; clearing the text removes it.
+      handleClickOn: (view, pos, node, nodePos) => {
+        if (node.type.name !== 'footnote') return false;
+        // eslint-disable-next-line no-alert
+        const next = window.prompt('Footnote source (leave empty to remove it)', node.attrs.text || '');
+        if (next === null) return true;
+        const { tr } = view.state;
+        if (next.trim() === '') tr.delete(nodePos, nodePos + node.nodeSize);
+        else tr.setNodeMarkup(nodePos, undefined, { text: next.trim() });
+        view.dispatch(tr);
+        return true;
+      },
     },
   }, []);
 
@@ -71,6 +85,14 @@ export default function Editor({ value, onChange, placeholder = 'Write here…' 
       editor.commands.setContent(value || '', false);
     }
   }, [editor, value]);
+
+  const addFootnote = useCallback(() => {
+    if (!editor) return;
+    // eslint-disable-next-line no-alert
+    const text = window.prompt('Footnote source, e.g. the case, statute, article or web address you are citing');
+    if (!text || !text.trim()) return;
+    editor.chain().focus().insertFootnote(text.trim()).run();
+  }, [editor]);
 
   const setLink = useCallback(() => {
     if (!editor) return;
@@ -109,6 +131,7 @@ export default function Editor({ value, onChange, placeholder = 'Write here…' 
         <span className="muted" style={{ padding: '0 .25rem' }}>|</span>
 
         <ToolbarButton onClick={setLink} active={editor.isActive('link')} title="Add or edit link">Link</ToolbarButton>
+        <ToolbarButton onClick={addFootnote} title="Add a footnote at the cursor">Footnote</ToolbarButton>
         <ToolbarButton onClick={() => setMediaOpen(true)} title="Insert image">Image</ToolbarButton>
         <ToolbarButton onClick={() => editor.chain().focus().setHorizontalRule().run()} title="Horizontal rule">—</ToolbarButton>
 
