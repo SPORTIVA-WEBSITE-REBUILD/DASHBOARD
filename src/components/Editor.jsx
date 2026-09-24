@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
@@ -62,6 +62,15 @@ export default function Editor({ value, onChange, placeholder = 'Write here…' 
       attributes: { class: 'editor__content', 'aria-label': placeholder },
     },
   }, []);
+
+  // The form fills in after the editor has mounted (the record loads a moment
+  // later), and useEditor only reads `content` once. Push later changes that
+  // did not originate here into the editor, or saved text shows as blank.
+  useEffect(() => {
+    if (editor && (value || '') !== editor.getHTML() && !editor.isFocused) {
+      editor.commands.setContent(value || '', false);
+    }
+  }, [editor, value]);
 
   const setLink = useCallback(() => {
     if (!editor) return;
