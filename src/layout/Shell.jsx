@@ -10,7 +10,7 @@ const NAV = [
   { to: '/', label: 'Dashboard', end: true, permission: null },
   { to: '/pages', label: 'Pages', permission: 'pages:read' },
   { to: '/cases', label: 'Case Record', permission: 'cases:read' },
-  { to: '/articles', label: 'Insights', permission: 'articles:read' },
+  { to: '/articles', label: 'Articles', permission: 'articles:read' },
   { to: '/services', label: 'Services', permission: 'services:read' },
   { to: '/lawyers', label: 'Team', permission: 'lawyers:read' },
   { to: '/gallery', label: 'Gallery', permission: 'gallery:read' },

@@ -6,10 +6,10 @@ export default function Articles() {
   return (
     <ResourceList
       resource="articles"
-      title="Insights"
+      title="Articles"
       singular="Article"
       newLabel="New article"
-      emptyMessage="Publish commentary and analysis here. Articles appear on the public Insights page."
+      emptyMessage="Publish commentary and analysis here. Articles appear on the public Articles page."
       columns={[
         { key: 'title', label: 'Title', render: (a) => <Link to={`/articles/${a._id}`}>{a.title}</Link> },
         { key: 'author', label: 'Author', width: '160px', render: (a) => a.author?.name || <span className="muted">—</span> },
