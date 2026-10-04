@@ -227,11 +227,27 @@ table.data td.actions { text-align: right; white-space: nowrap; }
 
 .modal-backdrop {
   position: fixed; inset: 0; background: rgba(16,24,40,.45);
-  display: flex; align-items: center; justify-content: center; z-index: 90; padding: 1rem;
+  /* flex-start, not center: a dialog taller than the screen that is centred
+     overflows off the TOP as well, and that part can never be reached. The
+     modal's own margin:auto still centres it whenever it does fit. */
+  display: flex; align-items: flex-start; justify-content: center; z-index: 90; padding: 1rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .modal {
   background: var(--surface); border-radius: var(--radius); box-shadow: 0 12px 40px rgba(16,24,40,.22);
   width: 100%; max-width: 480px; padding: 1.5rem;
+  /* The media library is a 24-image grid: without a height cap the dialog grew
+     to several times the viewport, nothing scrolled, and the pagination at the
+     bottom was unreachable — so the library appeared frozen on one fixed set of
+     images. dvh tracks mobile browser chrome as it hides and shows; the vh line
+     above it is the fallback for browsers without dvh. */
+  margin: auto;
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 .modal--wide { max-width: 900px; }
 .modal__actions { display: flex; justify-content: flex-end; gap: .5rem; margin-top: 1.25rem; }
@@ -383,3 +399,11 @@ table.data td.actions { text-align: right; white-space: nowrap; }
 }
 .editor__content sup[data-fn]::after { content: '[' counter(footnote) ']'; font-size: .85em; }
 .editor__content sup[data-fn].ProseMirror-selectednode { background: rgba(0, 120, 200, .15); border-radius: 3px; }
+
+/* Media library on a phone: full-height sheet, smaller thumbnails. */
+@media (max-width: 600px) {
+  .modal-backdrop { padding: .5rem; }
+  .modal { max-height: calc(100dvh - 1rem); padding: 1rem; }
+  .media-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: .5rem; }
+  .media-item img { height: 90px; }
+}

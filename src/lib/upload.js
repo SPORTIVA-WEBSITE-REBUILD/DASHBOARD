@@ -1,11 +1,23 @@
 import { api } from './api.js';
 
-const ALLOWED = ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'application/pdf'];
+// HEIC/HEIF included because that is what an iPhone camera produces by
+// default. iOS usually transcodes to JPEG when a photo is picked for a web
+// upload, but not always — and when it does not, the file was rejected here,
+// which reads to the user as "I cannot pick photos from my gallery".
+const ALLOWED = [
+  'image/jpeg', 'image/png', 'image/webp', 'image/avif',
+  'image/heic', 'image/heif', 'application/pdf',
+];
+const ALLOWED_EXT = /\.(jpe?g|png|webp|avif|heic|heif|pdf)$/i;
 const MAX_BYTES = 10 * 1024 * 1024;
 
 export function validateFile(file) {
-  if (!ALLOWED.includes(file.type)) {
-    return `${file.name}: only JPEG, PNG, WebP, AVIF and PDF files can be uploaded`;
+  // Some platforms hand over an empty type for HEIC, so the extension is the
+  // fallback rather than a flat rejection. The server re-checks the real
+  // format on its own; this is only here to fail fast and politely.
+  const typeOk = file.type ? ALLOWED.includes(file.type) : ALLOWED_EXT.test(file.name);
+  if (!typeOk) {
+    return `${file.name}: only JPEG, PNG, WebP, AVIF, HEIC and PDF files can be uploaded`;
   }
   if (file.size > MAX_BYTES) {
     return `${file.name}: files must be 10 MB or smaller`;
