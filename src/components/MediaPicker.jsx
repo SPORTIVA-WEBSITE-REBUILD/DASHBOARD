@@ -39,11 +39,11 @@ function UploadArea({ onUploaded }) {
         ref={inputRef}
         type="file"
         multiple
-        accept="image/jpeg,image/png,image/webp,image/avif,application/pdf"
+        accept="image/*,application/pdf"
         onChange={(e) => handleFiles(e.target.files)}
         disabled={busy}
       />
-      <span className="hint">JPEG, PNG, WebP, AVIF or PDF. Up to 10 MB each.</span>
+      <span className="hint">JPEG, PNG, WebP, AVIF, HEIC or PDF. Up to 10 MB each.</span>
       {progress !== null && (
         <div className="progress" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
           <div className="progress__bar" style={{ width: `${progress}%` }} />
