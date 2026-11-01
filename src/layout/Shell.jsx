@@ -18,6 +18,10 @@ const NAV = [
   { to: '/vacancies', label: 'Careers', permission: 'vacancies:read' },
   { to: '/categories', label: 'Categories', permission: 'categories:read' },
 
+  { section: 'Webinar' },
+  { to: '/webinar', label: 'Webinar settings', permission: 'webinar:read' },
+  { to: '/webinar/registrations', label: 'Registrations', permission: 'webinar:read' },
+
   { section: 'Site' },
   { to: '/media', label: 'Media', permission: 'media:read' },
   { to: '/enquiries', label: 'Enquiries', permission: 'enquiries:read' },
