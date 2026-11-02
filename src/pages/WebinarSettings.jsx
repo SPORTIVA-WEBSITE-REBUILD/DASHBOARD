@@ -112,6 +112,8 @@ export default function WebinarSettings() {
       supportEmail: values.supportEmail || '',
       organiserName: values.organiserName || '',
       bannerUrl: values.bannerUrl || '',
+      collaborationLine: values.collaborationLine || '',
+      collaborationLogoUrl: values.collaborationLogoUrl || '',
       shareImageUrl: values.shareImageUrl || '',
       speakers: speakers.map((s) => ({
         name: s.name || '', role: s.role || '', titleLines: s.titleLines || [],
@@ -336,6 +338,25 @@ export default function WebinarSettings() {
             value={values.shareImageUrl}
             onChange={(url) => set('shareImageUrl', url)}
             hint="Used when the webinar link is shared on WhatsApp, LinkedIn, X and Facebook. A generated default is used until one is uploaded here."
+          />
+        </div>
+
+        <div className="card">
+          <div className="card__header"><h2>Collaboration</h2></div>
+          <Field label="Collaboration line" htmlFor="collaborationLine" hint="Optional. e.g. 'In Collaboration with Rasheedat Ajibade Foundation'. Shown under the title on the website hero and in the confirmation/reminder emails. Leave blank to show nothing.">
+            <input
+              id="collaborationLine"
+              type="text"
+              maxLength={200}
+              value={values.collaborationLine || ''}
+              onChange={(e) => set('collaborationLine', e.target.value)}
+            />
+          </Field>
+          <UrlImageUpload
+            label="Collaboration logo (optional)"
+            value={values.collaborationLogoUrl}
+            onChange={(url) => set('collaborationLogoUrl', url)}
+            hint="Shown on the website hero next to the collaboration line, if set."
           />
         </div>
 

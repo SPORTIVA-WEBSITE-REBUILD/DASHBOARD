@@ -22,6 +22,8 @@ const WEBINAR = {
   supportEmail: '',
   organiserName: 'PCN Sportiva LP',
   bannerUrl: '',
+  collaborationLine: '',
+  collaborationLogoUrl: '',
   shareImageUrl: '',
   speakers: [{ name: 'Caroline Mwanzia', role: 'Moderator/Speaker', titleLines: ['Associate'], shortBio: 'x', bio: 'y', photoUrl: '', order: 1 }],
   faq: [{ question: 'How do I join?', answer: '', order: 1 }],
@@ -58,6 +60,17 @@ describe('WebinarSettings', () => {
     await waitFor(() => expect(screen.getByLabelText('Show webinar in the home page hero')).toBeInTheDocument());
     expect(screen.getByLabelText('Show webinar in the home page hero')).not.toBeChecked();
     expect(screen.getByRole('button', { name: /save changes/i })).toBeDisabled();
+  });
+
+  it('edits the collaboration line and saves it', async () => {
+    api.put.mockResolvedValue({ success: true, data: { ...WEBINAR, collaborationLine: 'In Collaboration with Rasheedat Ajibade Foundation' } });
+    renderPage();
+    await waitFor(() => expect(screen.getByLabelText('Collaboration line')).toBeInTheDocument());
+    expect(screen.getByLabelText('Collaboration line')).toHaveValue('');
+
+    fireEvent.change(screen.getByLabelText('Collaboration line'), { target: { value: 'In Collaboration with Rasheedat Ajibade Foundation' } });
+    fireEvent.click(screen.getByRole('button', { name: /save changes/i }));
+    await waitFor(() => expect(api.put).toHaveBeenCalledWith('/admin/webinar', expect.objectContaining({ collaborationLine: 'In Collaboration with Rasheedat Ajibade Foundation' })));
   });
 
   it('becomes dirty and savable after a field changes, and saves with the edited value', async () => {
