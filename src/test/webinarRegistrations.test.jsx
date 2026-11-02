@@ -1,20 +1,27 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastProvider } from '../components/ui.jsx';
 import WebinarRegistrations from '../pages/WebinarRegistrations.jsx';
 import { api } from '../lib/api.js';
 
+let lastQsArgs;
 vi.mock('../lib/api.js', () => ({
   api: { get: vi.fn(), post: vi.fn(), patch: vi.fn(), put: vi.fn(), del: vi.fn(), download: vi.fn() },
-  qs: () => '',
+  qs: (args) => { lastQsArgs = args; return ''; },
 }));
 
 const LIST = {
   success: true,
   data: [
-    { _id: 'r1', name: 'Jane Doe', email: 'jane@example.test', createdAt: '2026-10-01T00:00:00Z', emailStatus: 'SENT' },
-    { _id: 'r2', name: 'Failed Fella', email: 'fail@example.test', createdAt: '2026-10-02T00:00:00Z', emailStatus: 'FAILED', emailError: '535 Auth failed' },
+    {
+      _id: 'r1', name: 'Jane Doe', email: 'jane@example.test', createdAt: '2026-10-01T00:00:00Z',
+      emailStatus: 'SENT', role: 'Lawyer', nationality: 'Nigeria', phone: '+2348012345678',
+    },
+    {
+      _id: 'r2', name: 'Failed Fella', email: 'fail@example.test', createdAt: '2026-10-02T00:00:00Z',
+      emailStatus: 'FAILED', emailError: '535 Auth failed', role: 'Other', roleOther: 'Event organiser', nationality: 'Kenya',
+    },
   ],
   meta: { page: 1, limit: 20, total: 2, pages: 1, counts: { total: 2, sent: 1, failed: 1, pending: 0 } },
 };
@@ -97,5 +104,30 @@ describe('WebinarRegistrations', () => {
     await waitFor(() => expect(screen.getByText('Jane Doe')).toBeInTheDocument());
     fireEvent.click(screen.getByRole('button', { name: 'Failed' }));
     await waitFor(() => expect(api.get).toHaveBeenLastCalledWith(expect.stringContaining('/admin/webinar/registrations')));
+  });
+
+  it('shows Role, Nationality and Phone columns, with the "Other" role expanded', async () => {
+    renderPage();
+    await waitFor(() => expect(screen.getByText('Jane Doe')).toBeInTheDocument());
+    const row = screen.getByText('Jane Doe').closest('tr');
+    expect(within(row).getByText('Lawyer')).toBeInTheDocument();
+    expect(within(row).getByText('Nigeria')).toBeInTheDocument();
+    expect(within(row).getByText('+2348012345678')).toBeInTheDocument();
+    expect(screen.getByText('Other (Event organiser)')).toBeInTheDocument();
+    expect(screen.getByText('Kenya')).toBeInTheDocument();
+  });
+
+  it('filters by role and includes it in the registrations query', async () => {
+    renderPage();
+    await waitFor(() => expect(screen.getByText('Jane Doe')).toBeInTheDocument());
+    fireEvent.change(screen.getByLabelText('Filter by role'), { target: { value: 'Lawyer' } });
+    await waitFor(() => expect(lastQsArgs).toMatchObject({ role: 'Lawyer' }));
+  });
+
+  it('filters by nationality and includes it in the registrations query', async () => {
+    renderPage();
+    await waitFor(() => expect(screen.getByText('Jane Doe')).toBeInTheDocument());
+    fireEvent.change(screen.getByLabelText('Filter by nationality'), { target: { value: 'Kenya' } });
+    await waitFor(() => expect(lastQsArgs).toMatchObject({ nationality: 'Kenya' }));
   });
 });

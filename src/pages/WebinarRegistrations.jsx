@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, qs } from '../lib/api.js';
+import { COUNTRIES } from '../lib/countries.js';
 import { PageHeader } from '../layout/Shell.jsx';
 import {
   ConfirmDialog, EmptyState, ErrorState, LoadingRows,
@@ -9,6 +10,15 @@ import {
 
 const STATUS_LABEL = { PENDING: 'Pending', SENT: 'Sent', FAILED: 'Failed' };
 
+const ROLES = [
+  'Athlete (Professional)',
+  'Athlete (Recreational)',
+  'Sports Management and Administration',
+  'Lawyer',
+  'Law Student',
+  'Other',
+];
+
 function StatusChip({ status }) {
   return <span className={`badge badge--${status?.toLowerCase()}`}>{STATUS_LABEL[status] || status}</span>;
 }
@@ -16,13 +26,15 @@ function StatusChip({ status }) {
 export default function WebinarRegistrations() {
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState('');
+  const [role, setRole] = useState('');
+  const [nationality, setNationality] = useState('');
   const [search, setSearch] = useState('');
   const [confirmAction, setConfirmAction] = useState(null); // { type: 'resend-failed'|'reminder-day'|'reminder-hour', count }
   const debounced = useDebounced(search);
   const queryClient = useQueryClient();
   const toast = useToast();
 
-  const query = { page, limit: 20, status, q: debounced };
+  const query = { page, limit: 20, status, role, nationality, q: debounced };
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['webinar-registrations', query],
@@ -130,6 +142,25 @@ export default function WebinarRegistrations() {
                   {s ? STATUS_LABEL[s] : 'All'}
                 </button>
               ))}
+              <select
+                aria-label="Filter by role"
+                value={role}
+                onChange={(e) => { setRole(e.target.value); setPage(1); }}
+              >
+                <option value="">All roles</option>
+                {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+              </select>
+              <input
+                type="text"
+                list="webinar-registrations-countries"
+                aria-label="Filter by nationality"
+                placeholder="Filter by nationality"
+                value={nationality}
+                onChange={(e) => { setNationality(e.target.value); setPage(1); }}
+              />
+              <datalist id="webinar-registrations-countries">
+                {COUNTRIES.map((c) => <option key={c} value={c} />)}
+              </datalist>
             </div>
             <div>
               <button
@@ -156,16 +187,22 @@ export default function WebinarRegistrations() {
             <div className="table-wrap">
               <table className="data">
                 <thead>
-                  <tr><th>Name</th><th>Email</th><th>Registered at</th><th>Email status</th><th className="text-right">Actions</th></tr>
+                  <tr>
+                    <th>Name</th><th>Email</th><th>Role</th><th>Nationality</th><th>Phone</th>
+                    <th>Registered at</th><th>Email status</th><th className="text-right">Actions</th>
+                  </tr>
                 </thead>
                 {isLoading && !data
-                  ? <LoadingRows rows={6} cols={5} />
+                  ? <LoadingRows rows={6} cols={8} />
                   : (
                     <tbody>
                       {items.map((r) => (
                         <tr key={r._id}>
                           <td>{r.name}</td>
                           <td><a href={`mailto:${r.email}`}>{r.email}</a></td>
+                          <td>{r.role === 'Other' && r.roleOther ? `Other (${r.roleOther})` : (r.role || '—')}</td>
+                          <td>{r.nationality || '—'}</td>
+                          <td>{r.phone || '—'}</td>
                           <td className="muted">{formatDate(r.createdAt)}</td>
                           <td>
                             <StatusChip status={r.emailStatus} />
