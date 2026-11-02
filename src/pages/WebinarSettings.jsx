@@ -4,6 +4,7 @@ import { api } from '../lib/api.js';
 import { PageHeader } from '../layout/Shell.jsx';
 import { ErrorState, Field, Spinner, useToast, Modal } from '../components/ui.jsx';
 import UrlImageUpload from '../components/UrlImageUpload.jsx';
+import { interpretSmtpCheck } from '../lib/interpretSmtpCheck.js';
 
 /** UTC <-> the plain local-time strings a datetime-local input needs. The
  *  Webinar's startsAt/endsAt/webinarHeroEndsAt are stored as real UTC
@@ -138,6 +139,33 @@ export default function WebinarSettings() {
     onError: (err) => toast.error(err.message || 'Could not send the test email'),
   });
 
+  const smtpCheck = useMutation({
+    mutationFn: () => api.post('/admin/webinar/smtp-check').then((r) => r.data),
+    onError: (err) => toast.error(err.message || 'Could not run the check'),
+  });
+
+  function copySmtpCheck() {
+    const d = smtpCheck.data;
+    if (!d) return;
+    const tcp465 = d.tcp.find((t) => t.port === 465);
+    const tcp587 = d.tcp.find((t) => t.port === 587);
+    const missing = Object.entries(d.config.namesPresent).filter(([, p]) => !p).map(([n]) => n);
+    const { conclusion, fix } = interpretSmtpCheck(d);
+    const text = [
+      'Webinar email connection check',
+      `Email settings found: ${missing.length === 0 ? 'yes' : `no — missing ${missing.join(', ')}`}`,
+      `Mail server in use: ${d.config.host || '(not set)'}:${d.config.port || ''} (${d.config.secure ? 'secure' : 'not secure'}), sending as ${d.config.fromAddress || '(not set)'}`,
+      `Port 465 reachable: ${tcp465?.reachable ? `yes (${tcp465.ms}ms)` : `no (${tcp465?.code || 'unknown'}, ${tcp465?.ms ?? 0}ms)`}`,
+      `Port 587 reachable: ${tcp587?.reachable ? `yes (${tcp587.ms}ms)` : `no (${tcp587?.code || 'unknown'}, ${tcp587?.ms ?? 0}ms)`}`,
+      `Login accepted: ${d.verify.ok ? 'yes' : `no (${d.verify.code || 'unknown'}${d.verify.smtpResponseCode ? `, SMTP ${d.verify.smtpResponseCode}` : ''})`}`,
+      `Conclusion: ${conclusion}`,
+      `Fix: ${fix}`,
+    ].join('\n');
+    navigator.clipboard.writeText(text)
+      .then(() => toast.success('Copied to clipboard'))
+      .catch(() => toast.error('Could not copy — your browser may be blocking clipboard access'));
+  }
+
   if (isLoading || !values) return <><PageHeader title="Webinar" /><div className="content"><Spinner /></div></>;
   if (isError) return <><PageHeader title="Webinar" /><div className="content"><ErrorState error={error} onRetry={refetch} /></div></>;
 
@@ -187,6 +215,56 @@ export default function WebinarSettings() {
             <code>/?previewWebinar=1</code> on the live site while signed in here — it shows
             only to you and never changes this setting.
           </p>
+        </div>
+
+        <div className="card">
+          <div className="card__header"><h2>Email connection check</h2></div>
+          <p className="hint mb-2">
+            Checks whether confirmation and reminder emails can actually be sent, right now, from this
+            deployment — useful any time, especially on launch day. The password is never shown.
+          </p>
+          <button type="button" className="btn" disabled={smtpCheck.isPending} onClick={() => smtpCheck.mutate()}>
+            {smtpCheck.isPending && <Spinner />} Check email connection
+          </button>
+
+          {smtpCheck.data && (() => {
+            const d = smtpCheck.data;
+            const tcp465 = d.tcp.find((t) => t.port === 465);
+            const tcp587 = d.tcp.find((t) => t.port === 587);
+            const missing = Object.entries(d.config.namesPresent).filter(([, present]) => !present).map(([name]) => name);
+            const { conclusion, fix } = interpretSmtpCheck(d);
+            return (
+              <div className="card mt-2" style={{ background: '#fafbfc' }}>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  <li>
+                    <strong>Email settings found:</strong>{' '}
+                    {missing.length === 0 ? 'Yes' : `No — missing ${missing.join(', ')}`}
+                  </li>
+                  <li>
+                    <strong>Mail server in use:</strong>{' '}
+                    {d.config.host ? `${d.config.host}:${d.config.port} (${d.config.secure ? 'secure' : 'not secure'}), sending as ${d.config.fromAddress || '—'}` : 'Not set'}
+                  </li>
+                  <li>
+                    <strong>Port 465 reachable:</strong>{' '}
+                    {tcp465?.reachable ? `Yes (${tcp465.ms}ms)` : `No (${tcp465?.code || 'unknown'}, ${tcp465?.ms ?? 0}ms)`}
+                  </li>
+                  <li>
+                    <strong>Port 587 reachable:</strong>{' '}
+                    {tcp587?.reachable ? `Yes (${tcp587.ms}ms)` : `No (${tcp587?.code || 'unknown'}, ${tcp587?.ms ?? 0}ms)`}
+                  </li>
+                  <li>
+                    <strong>Login accepted:</strong>{' '}
+                    {d.verify.ok ? 'Yes' : `No (${d.verify.code || 'unknown'}${d.verify.smtpResponseCode ? `, SMTP ${d.verify.smtpResponseCode}` : ''})`}
+                  </li>
+                </ul>
+                <div className={`alert mt-2 ${d.verify.ok ? 'alert--success' : 'alert--warning'}`}>
+                  <strong>{conclusion}</strong>
+                  <div className="mt-1">{fix}</div>
+                </div>
+                <button type="button" className="btn btn--sm mt-2" onClick={copySmtpCheck}>Copy results</button>
+              </div>
+            );
+          })()}
         </div>
 
         <div className="card">

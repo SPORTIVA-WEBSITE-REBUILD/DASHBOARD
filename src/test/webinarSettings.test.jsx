@@ -110,3 +110,57 @@ describe('WebinarSettings', () => {
     expect(href).toMatch(/^https?:\/\//);
   });
 });
+
+describe('WebinarSettings: email connection check', () => {
+  it('runs the check and shows the plain-language checklist, never the password', async () => {
+    api.post.mockResolvedValue({
+      success: true,
+      data: {
+        tcp: [{ port: 465, reachable: true, ms: 120 }, { port: 587, reachable: false, code: 'ETIMEDOUT', ms: 15000 }],
+        verify: { ok: true, code: null },
+        config: {
+          namesPresent: { SMTP_HOST: true, SMTP_PORT: true, SMTP_SECURE: true, SMTP_USER: true, SMTP_PASS: true, MAIL_FROM_NAME: true, MAIL_FROM_ADDRESS: true, MAIL_REPLY_TO: true, EMAIL_DRY_RUN: false },
+          host: 'smtp.zoho.com', port: 465, secure: true, user: 'contact@pcnsportivalp.com', fromAddress: 'contact@pcnsportivalp.com',
+        },
+      },
+    });
+    renderPage();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Check email connection' })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole('button', { name: 'Check email connection' }));
+
+    await waitFor(() => expect(api.post).toHaveBeenCalledWith('/admin/webinar/smtp-check'));
+    expect(await screen.findByText(/Port 465 reachable:/)).toBeInTheDocument();
+    expect(screen.getByText(/Yes \(120ms\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Port 587 reachable:/).closest('li')).toHaveTextContent('No (ETIMEDOUT, 15000ms)');
+    expect(screen.getByText(/smtp\.zoho\.com:465/)).toBeInTheDocument();
+    expect(screen.getByText(/working/i)).toBeInTheDocument();
+    expect(document.body.innerHTML).not.toMatch(/correct-horse|hunter2/i); // no password text anywhere
+  });
+
+  it('the Copy results button writes a plain-text summary to the clipboard', async () => {
+    api.post.mockResolvedValue({
+      success: true,
+      data: {
+        tcp: [{ port: 465, reachable: false, code: 'ETIMEDOUT', ms: 15000 }, { port: 587, reachable: false, code: 'ETIMEDOUT', ms: 15000 }],
+        verify: { ok: false, code: 'ETIMEDOUT' },
+        config: {
+          namesPresent: { SMTP_HOST: true, SMTP_PORT: true, SMTP_SECURE: true, SMTP_USER: true, SMTP_PASS: true, MAIL_FROM_NAME: true, MAIL_FROM_ADDRESS: true, MAIL_REPLY_TO: true, EMAIL_DRY_RUN: false },
+          host: 'smtp.zoho.com', port: 465, secure: true, user: 'contact@pcnsportivalp.com', fromAddress: 'contact@pcnsportivalp.com',
+        },
+      },
+    });
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, { clipboard: { writeText } });
+
+    renderPage();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Check email connection' })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole('button', { name: 'Check email connection' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Copy results' }));
+
+    await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
+    const copied = writeText.mock.calls[0][0];
+    expect(copied).toContain('Port 465 reachable: no');
+    expect(copied).toContain('network block');
+    expect(copied).not.toMatch(/correct-horse|hunter2/i);
+  });
+});
