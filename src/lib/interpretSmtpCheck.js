@@ -3,11 +3,16 @@
  * English conclusion and an exact fix — pure and separately testable from
  * the screen that renders it. Never touches SMTP_PASS or any secret value;
  * the route itself already withholds it, this only reads what it returns.
+ *
+ * "Missing" is read from config.missingRequired, which the API computes —
+ * not re-derived here from namesPresent with a hardcoded exclusion list,
+ * which is exactly the kind of thing that quietly drifts out of sync with
+ * the API's own idea of what is actually required (SMTP_HOST/USER/PASS
+ * only; everything else, including SMTP_SECURE and EMAIL_DRY_RUN, has a
+ * sensible default and is never "missing").
  */
 export function interpretSmtpCheck(data) {
-  const missing = Object.entries(data.config.namesPresent)
-    .filter(([name, present]) => !present && name !== 'EMAIL_DRY_RUN' && name !== 'SMTP_SECURE' && name !== 'MAIL_FROM_NAME' && name !== 'MAIL_REPLY_TO')
-    .map(([name]) => name);
+  const missing = data.config.missingRequired || [];
 
   if (missing.length > 0) {
     return {
@@ -55,7 +60,7 @@ export function interpretSmtpCheck(data) {
   }
 
   return {
-    conclusion: `The connection failed with ${data.verify.code || 'an unknown error'}.`,
+    conclusion: `The connection failed: ${data.verify.code || 'no further detail was available'}.`,
     fix: 'Check SMTP_HOST, SMTP_PORT and SMTP_SECURE are a consistent set for the mail provider in use.',
   };
 }

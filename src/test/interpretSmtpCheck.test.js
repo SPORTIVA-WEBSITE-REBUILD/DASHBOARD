@@ -9,6 +9,8 @@ const base = {
       SMTP_HOST: true, SMTP_PORT: true, SMTP_SECURE: true, SMTP_USER: true, SMTP_PASS: true,
       MAIL_FROM_NAME: true, MAIL_FROM_ADDRESS: true, MAIL_REPLY_TO: true, EMAIL_DRY_RUN: false,
     },
+    required: ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS'],
+    missingRequired: [],
     host: 'smtp.example.com', port: 465, secure: true, user: 'x@example.com', fromAddress: 'x@example.com',
   },
 };
@@ -24,10 +26,18 @@ describe('interpretSmtpCheck', () => {
     const r = interpretSmtpCheck({
       ...base,
       verify: { ok: false, code: 'MISSING_HOST_OR_CREDENTIALS' },
-      config: { ...base.config, namesPresent: { ...base.config.namesPresent, SMTP_HOST: false, SMTP_PASS: false } },
+      config: { ...base.config, missingRequired: ['SMTP_HOST', 'SMTP_PASS'] },
     });
     expect(r.fix).toContain('SMTP_HOST');
     expect(r.fix).toContain('SMTP_PASS');
+  });
+
+  it('EMAIL_DRY_RUN and SMTP_SECURE being absent never counts as "missing" — only missingRequired does', () => {
+    const r = interpretSmtpCheck({
+      ...base,
+      config: { ...base.config, namesPresent: { ...base.config.namesPresent, SMTP_SECURE: false, EMAIL_DRY_RUN: false }, missingRequired: [] },
+    });
+    expect(r.conclusion).not.toMatch(/missing/i);
   });
 
   it('EAUTH: tells the admin to check SMTP access / regenerate an app password, without ever naming a password value', () => {

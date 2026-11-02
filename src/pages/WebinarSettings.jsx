@@ -149,12 +149,13 @@ export default function WebinarSettings() {
     if (!d) return;
     const tcp465 = d.tcp.find((t) => t.port === 465);
     const tcp587 = d.tcp.find((t) => t.port === 587);
-    const missing = Object.entries(d.config.namesPresent).filter(([, p]) => !p).map(([n]) => n);
+    const missing = d.config.missingRequired || [];
     const { conclusion, fix } = interpretSmtpCheck(d);
     const text = [
       'Webinar email connection check',
       `Email settings found: ${missing.length === 0 ? 'yes' : `no — missing ${missing.join(', ')}`}`,
       `Mail server in use: ${d.config.host || '(not set)'}:${d.config.port || ''} (${d.config.secure ? 'secure' : 'not secure'}), sending as ${d.config.fromAddress || '(not set)'}`,
+      `SMTP_SECURE: ${d.config.secureRaw !== null && d.config.secureRaw !== undefined ? `"${d.config.secureRaw}"` : '(not set)'} — ${d.config.secureRule}`,
       `Port 465 reachable: ${tcp465?.reachable ? `yes (${tcp465.ms}ms)` : `no (${tcp465?.code || 'unknown'}, ${tcp465?.ms ?? 0}ms)`}`,
       `Port 587 reachable: ${tcp587?.reachable ? `yes (${tcp587.ms}ms)` : `no (${tcp587?.code || 'unknown'}, ${tcp587?.ms ?? 0}ms)`}`,
       `Login accepted: ${d.verify.ok ? 'yes' : `no (${d.verify.code || 'unknown'}${d.verify.smtpResponseCode ? `, SMTP ${d.verify.smtpResponseCode}` : ''})`}`,
@@ -231,7 +232,7 @@ export default function WebinarSettings() {
             const d = smtpCheck.data;
             const tcp465 = d.tcp.find((t) => t.port === 465);
             const tcp587 = d.tcp.find((t) => t.port === 587);
-            const missing = Object.entries(d.config.namesPresent).filter(([, present]) => !present).map(([name]) => name);
+            const missing = d.config.missingRequired || [];
             const { conclusion, fix } = interpretSmtpCheck(d);
             return (
               <div className="card mt-2" style={{ background: '#fafbfc' }}>
@@ -243,6 +244,11 @@ export default function WebinarSettings() {
                   <li>
                     <strong>Mail server in use:</strong>{' '}
                     {d.config.host ? `${d.config.host}:${d.config.port} (${d.config.secure ? 'secure' : 'not secure'}), sending as ${d.config.fromAddress || '—'}` : 'Not set'}
+                  </li>
+                  <li>
+                    <strong>SMTP_SECURE:</strong>{' '}
+                    {d.config.secureRaw !== null && d.config.secureRaw !== undefined ? `"${d.config.secureRaw}"` : '(not set)'}
+                    {' — '}{d.config.secureRule}
                   </li>
                   <li>
                     <strong>Port 465 reachable:</strong>{' '}

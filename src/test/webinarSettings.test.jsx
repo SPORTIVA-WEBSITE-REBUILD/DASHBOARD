@@ -120,6 +120,8 @@ describe('WebinarSettings: email connection check', () => {
         verify: { ok: true, code: null },
         config: {
           namesPresent: { SMTP_HOST: true, SMTP_PORT: true, SMTP_SECURE: true, SMTP_USER: true, SMTP_PASS: true, MAIL_FROM_NAME: true, MAIL_FROM_ADDRESS: true, MAIL_REPLY_TO: true, EMAIL_DRY_RUN: false },
+          required: ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS'], missingRequired: [],
+          secureRaw: 'true', secureRule: 'SMTP_SECURE="true" → true',
           host: 'smtp.zoho.com', port: 465, secure: true, user: 'contact@pcnsportivalp.com', fromAddress: 'contact@pcnsportivalp.com',
         },
       },
@@ -145,6 +147,8 @@ describe('WebinarSettings: email connection check', () => {
         verify: { ok: false, code: 'ETIMEDOUT' },
         config: {
           namesPresent: { SMTP_HOST: true, SMTP_PORT: true, SMTP_SECURE: true, SMTP_USER: true, SMTP_PASS: true, MAIL_FROM_NAME: true, MAIL_FROM_ADDRESS: true, MAIL_REPLY_TO: true, EMAIL_DRY_RUN: false },
+          required: ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS'], missingRequired: [],
+          secureRaw: 'true', secureRule: 'SMTP_SECURE="true" → true',
           host: 'smtp.zoho.com', port: 465, secure: true, user: 'contact@pcnsportivalp.com', fromAddress: 'contact@pcnsportivalp.com',
         },
       },
