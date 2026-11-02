@@ -19,6 +19,8 @@ const ServiceEdit = lazy(() => import('./pages/ServiceEdit.jsx'));
 const Gallery = lazy(() => import('./pages/Gallery.jsx'));
 const GalleryEdit = lazy(() => import('./pages/GalleryEdit.jsx'));
 const Vacancies = lazy(() => import('./pages/Vacancies.jsx'));
+const WebinarSettings = lazy(() => import('./pages/WebinarSettings.jsx'));
+const WebinarRegistrations = lazy(() => import('./pages/WebinarRegistrations.jsx'));
 const VacancyEdit = lazy(() => import('./pages/VacancyEdit.jsx'));
 const Lawyers = lazy(() => import('./pages/Lawyers.jsx'));
 const LawyerEdit = lazy(() => import('./pages/LawyerEdit.jsx'));
@@ -87,6 +89,8 @@ export default function App() {
           <Route path="gallery/:id" element={<GalleryEdit />} />
 
           <Route path="vacancies" element={<Vacancies />} />
+          <Route path="webinar" element={<WebinarSettings />} />
+          <Route path="webinar/registrations" element={<WebinarRegistrations />} />
           <Route path="vacancies/:id" element={<VacancyEdit />} />
 
           <Route path="lawyers" element={<Lawyers />} />

@@ -184,6 +184,8 @@ table.data td.actions { text-align: right; white-space: nowrap; }
 .badge--new { background: var(--success-bg); color: var(--success); }
 .badge--spam { background: var(--danger-bg); color: var(--danger); }
 .badge--pending { background: var(--warning-bg); color: var(--warning); }
+.badge--sent { background: var(--success-bg); color: var(--success); }
+.badge--failed { background: var(--danger-bg); color: var(--danger); }
 .badge--approved, .badge--subscribed { background: var(--success-bg); color: var(--success); }
 .badge--unsubscribed { background: #eef0f3; color: var(--muted); }
 
