@@ -126,22 +126,25 @@ export default function WebinarRegistrations() {
         </div>
 
         <div className="card">
-          <div className="toolbar" style={{ justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div className="toolbar" style={{ justifyContent: 'space-between', rowGap: '0.75rem' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.75rem' }}>
               <input
                 type="search" placeholder="Search name or email" aria-label="Search registrations"
                 value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               />
-              {['', 'PENDING', 'SENT', 'FAILED'].map((s) => (
-                <button
-                  key={s || 'all'}
-                  type="button"
-                  className={`btn btn--sm${status === s ? ' btn--primary' : ''}`}
-                  onClick={() => { setStatus(s); setPage(1); }}
-                >
-                  {s ? STATUS_LABEL[s] : 'All'}
-                </button>
-              ))}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                {['', 'PENDING', 'SENT', 'FAILED'].map((s) => (
+                  <button
+                    key={s || 'all'}
+                    type="button"
+                    className={`btn btn--sm${status === s ? ' btn--primary' : ''}`}
+                    style={{ whiteSpace: 'nowrap' }}
+                    onClick={() => { setStatus(s); setPage(1); }}
+                  >
+                    {s ? STATUS_LABEL[s] : 'All'}
+                  </button>
+                ))}
+              </div>
               <select
                 aria-label="Filter by role"
                 value={role}
@@ -162,20 +165,19 @@ export default function WebinarRegistrations() {
                 {COUNTRIES.map((c) => <option key={c} value={c} />)}
               </datalist>
             </div>
-            <div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
               <button
                 type="button" className="btn btn--sm"
+                style={{ whiteSpace: 'nowrap' }}
                 disabled={counts.failed === 0 || resendFailed.isPending}
                 onClick={() => setConfirmAction({ type: 'resend-failed', count: counts.failed })}
               >
                 Resend failed ({counts.failed})
               </button>
-              {' '}
-              <button type="button" className="btn btn--sm" onClick={() => openReminderConfirm('day')}>
+              <button type="button" className="btn btn--sm" style={{ whiteSpace: 'nowrap' }} onClick={() => openReminderConfirm('day')}>
                 Send reminder: day before
               </button>
-              {' '}
-              <button type="button" className="btn btn--sm" onClick={() => openReminderConfirm('hour')}>
+              <button type="button" className="btn btn--sm" style={{ whiteSpace: 'nowrap' }} onClick={() => openReminderConfirm('hour')}>
                 Send reminder: hour before
               </button>
             </div>
