@@ -27,3 +27,9 @@
     X-Robots-Tag = "noindex, nofollow"
     X-Frame-Options = "DENY"
     Referrer-Policy = "same-origin"
+    # Scripts only from this site (no inline, no eval, no third parties), which is
+    # the main backstop against injected script on an admin surface. Styles allow
+    # 'unsafe-inline' because React sets style attributes. Images may come from any
+    # https host (articles and media reference arbitrary image URLs). connect-src
+    # is this site (the /api proxy) plus Cloudinary's direct-upload endpoint.
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https://api.cloudinary.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
